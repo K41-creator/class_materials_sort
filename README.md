@@ -1,89 +1,189 @@
-# class_materials_sort
+## class_materials_sort
 
 講義資料を自動で整理・分類するPythonツールです。
 
-Downloadsフォルダ内の講義資料を読み取り、
-PDFテキスト解析を用いて授業ごとに分類し、
-デスクトップ上へ整理して出力します。
+Downloadsフォルダ内のファイルを解析し、
+
+- 科目ごと
+- 拡張子ごと
+
+に自動で分類して、デスクトップへ整理します。
+
+さらに、
+
+- PDFテキスト解析
+- OCR（画像文字認識）
+- 重複ファイルスキップ
+- ログ出力
+- 日付フィルタ
+- GUI操作
+
+にも対応しています。
 
 ---
 
-## 主な機能
+# 主な機能
 
-- 授業ごとの自動分類
-- 拡張子ごとのフォルダ整理
-- PDFテキスト解析による科目判定
-- GUI操作対応
-- ログ出力機能
-- 重複コピー防止
-- 日付条件によるフィルタリング
-- 既にコピー済みのファイルを自動スキップ
+## 科目ごとの自動整理
+
+Downloadsフォルダ内の資料を：
+
+```txt
+数学A/
+ ├─ pdf/
+ ├─ png/
+ ├─ pptx/
+
+コンピュータ数学/
+ ├─ pdf/
+ ├─ jpg/
+```
+
+のように自動整理します。
 
 ---
 
-## 使用技術
+## 拡張子ごとの整理
 
-- Python
-- pathlib
-- shutil
-- tkinter
+対応拡張子：
+
+- pdf
+- docx
+- pptx
+- png
+- jpg
+- jpeg
+
+---
+
+## PDFテキスト解析
+
+PDFの1ページ目から文字を抽出し、
+ファイル名に科目名が無い場合でも分類できます。
+
+使用ライブラリ：
+
 - pdfplumber
 
 ---
 
-## フォルダ構成例
+## OCR対応（画像文字認識）
 
-### 整理前
+画像内の文字を読み取り、
+スクリーンショットや画像資料も自動分類します。
 
-```txt
-Downloads/
-    pdf/
-        数学A 第3回.pdf
-        コンピュータ基礎演習 課題.pdf
-        知的力学システム1.pdf
-```
+対応画像：
 
-### 整理後
-
-```txt
-Desktop/
-    class_materials_sort/
-        数学A/
-            pdf/
-                数学A 第3回.pdf
-
-        コンピュータ基礎演習/
-            pdf/
-                コンピュータ基礎演習 課題.pdf
-
-        知的力学システム/
-            pdf/
-                知的力学システム1.pdf
-```
-
----
-
-## GUI
-
-アプリ起動後、
-「整理開始」ボタンを押すことで自動整理を開始します。
-
----
-
-## PDF解析
-
-PDFの1ページ目からテキストを抽出し、
-授業名キーワードを検索して分類しています。
+- png
+- jpg
+- jpeg
 
 使用ライブラリ：
 
-```bash
-pip install pdfplumber
+- pytesseract
+- Pillow
+
+OCRエンジン：
+
+- Tesseract OCR
+
+---
+
+## 重複ファイルスキップ
+
+既にコピー済みのファイルが存在する場合は、
+重複コピーを防ぐためスキップします。
+
+これにより、
+同じ資料を何度実行しても
+ファイルが増殖しません。
+
+---
+
+## 日付フィルタ
+
+指定した日付以降のファイルのみ整理できます。
+
+例：
+
+```python
+days_limit = 7
+```
+
+↓
+
+「7日以内に追加されたファイルのみ整理」
+
+---
+
+## ログ出力
+
+整理結果を：
+
+```txt
+log.txt
+```
+
+へ保存します。
+
+例：
+
+```txt
+lecture1.pdf を コンピュータ数学/pdf にコピーしました。
 ```
 
 ---
 
-## 実行方法
+## GUI対応
+
+Tkinterを使用したGUIで、
+ボタン操作のみで整理できます。
+
+---
+
+# 使用ライブラリ
+
+## インストール
+
+```bash
+pip install pdfplumber pytesseract pillow
+```
+
+---
+
+# Tesseract OCR インストール
+
+Windows版Tesseract OCRをインストールしてください。
+
+インストール後、
+コード内でOCRエンジンのパスを指定します。
+
+例：
+
+```python
+pytesseract.pytesseract.tesseract_cmd = (
+    r"C:\Users\YOUR_NAME\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+)
+```
+
+---
+
+# 使用方法
+
+## 1. Downloadsフォルダへ資料を入れる
+
+対応ファイル：
+
+- pdf
+- docx
+- pptx
+- png
+- jpg
+- jpeg
+
+---
+
+## 2. プログラム実行
 
 ```bash
 python main.py
@@ -91,60 +191,85 @@ python main.py
 
 ---
 
-## ログ機能
+## 3. GUIで「整理開始」を押す
 
-整理結果は `log.txt` に保存されます。
-
-例：
+整理済みファイルが：
 
 ```txt
-数学A 第3回.pdf を 数学A/pdf にコピーしました。
-知的力学システム1.pdf は既にコピー済みです。
+Desktop/class_materials_sort
+```
+
+へ出力されます。
+
+---
+
+# ディレクトリ構成
+
+```txt
+class_materials_sort/
+├─ main.py
+├─ file_presort.py
+├─ README.md
+├─ requirements.txt
+```
+
+出力例：
+
+```txt
+class_materials_sort/
+├─ 数学A/
+│   ├─ pdf/
+│   └─ png/
+│
+├─ コンピュータ数学/
+│   ├─ pdf/
+│   └─ jpg/
+│
+└─ log.txt
 ```
 
 ---
 
-## 重複ファイル対策
+# 対応機能
 
-既に同名ファイルが存在する場合は、
-再コピーせずスキップします。
-
----
-
-## 学んだこと
-
-- pathlibによるパス操作
-- shutilによるファイルコピー
-- tkinterによるGUI作成
-- pdfplumberによるPDF解析
-- for文 / if文 / while文
-- 関数化
-- ログ管理
-- 文字列検索
-- デバッグ
-- ファイル自動整理
+- [x] 科目別整理
+- [x] 拡張子別整理
+- [x] PDF解析
+- [x] OCR
+- [x] GUI
+- [x] ログ出力
+- [x] 日付フィルタ
+- [x] 重複ファイルスキップ
 
 ---
 
-## 今後追加したい機能
+# 今後追加予定
 
-- フォルダ選択GUI
 - JSON設定ファイル
-- OCR対応
-- ドラッグ＆ドロップ
+- ドラッグ＆ドロップ対応
 - exe化
-- 学期ごとの自動分類
-- AIによる講義資料タイトル解析
+- AIによる自動分類
+- PDF全文検索
+- 自動バックアップ
 
 ---
 
-## 注意
+# 開発環境
 
-現在はコピー方式で動作します。
-元ファイルは削除されません。
+- Python 3.13
+- Windows 11
 
 ---
 
-## ライセンス
+# License
 
 MIT License
+
+# Third-Party Libraries
+
+This project uses the following libraries and tools:
+
+- Tesseract OCR (Apache License 2.0)
+- pytesseract
+- Pillow
+- pdfplumber
